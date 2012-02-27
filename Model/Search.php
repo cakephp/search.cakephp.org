@@ -17,8 +17,6 @@ class Search {
 		$Http = new HttpSocket();
 		$results = $Http->get($url, array(), array('body' => json_encode($query)));
 		$contents = json_decode($results->body(), true);
-		debug(count($contents['hits']['hits']));
-		debug($contents);
 		return array_map(function ($el) {
 			return array(
 				'url' => $el['fields']['url'],
