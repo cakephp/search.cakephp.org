@@ -22,6 +22,7 @@
  */
 	Router::parseExtensions('json');
 
+	Router::connect('/search', array('controller' => 'search', 'action' => 'search'));
 /**
  * Load the CakePHP default routes. Remove this if you do not want to use
  * the built-in default routes.
