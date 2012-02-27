@@ -7,21 +7,28 @@ class SearchController extends AppController {
  * Search the elastic search index.
  */
 	public function search() {
+		if (empty($this->request->query['lang'])) {
+			throw BadRequestException();
+		}
+		$lang = $this->request->query['lang'];
+
 		$query = array(
 			'query' => array(
-				'term' => array(
-					'contents' => $this->request->query['q'],
-					'lang' => $this->request->query['lang'],
-				)
+				'text' => array(
+					'contents' => array(
+						'query' => $this->request->query['q'],
+						'type' => 'phrase'
+					),
+				),
 			),
-			'fields' => array('url', 'title'),
+			'fields' => array('url'),
 			'highlight' => array(
 				'fields' => array(
-					'contents' => array('fragment_size' => 100, 'number_of_fragments' => 5)
+					'contents' => array('fragment_size' => 100, 'number_of_fragments' => 3)
 				)
 			)
 		);
-		$results = $this->Search->search($query);
+		$results = $this->Search->find($lang, $query);
 		$this->set('results', $results);
 		$this->set('_serialize', 'results');
 	}
