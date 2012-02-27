@@ -8,9 +8,14 @@ class SearchController extends AppController {
  */
 	public function search() {
 		if (empty($this->request->query['lang'])) {
-			throw BadRequestException();
+			throw new BadRequestException();
 		}
 		$lang = $this->request->query['lang'];
+
+		$page = 0;
+		if (!empty($this->request->query['page'])) {
+			$page = $this->request->query['page'];
+		}
 
 		$query = array(
 			'query' => array(
@@ -26,8 +31,14 @@ class SearchController extends AppController {
 				'fields' => array(
 					'contents' => array('fragment_size' => 100, 'number_of_fragments' => 3)
 				)
-			)
+			),
+			'size' => 25,
 		);
+
+		// Pagination
+		if ($page > 0) {
+			$query['from'] = $query['size'] * ($page - 1);
+		}
 		$results = $this->Search->find($lang, $query);
 		$this->set('results', $results);
 		$this->set('_serialize', 'results');
