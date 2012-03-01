@@ -17,11 +17,16 @@ class Search {
 		$Http = new HttpSocket();
 		$results = $Http->get($url, array(), array('body' => json_encode($query)));
 		$contents = json_decode($results->body(), true);
-		return array_map(function ($el) {
+		$data = array_map(function ($el) {
 			return array(
 				'url' => $el['fields']['url'],
 				'contents' => $el['highlight']['contents'],
 			);
 		}, $contents['hits']['hits']);
+		return array(
+			'page' => isset($query['from']) ? $query['from'] : 1,
+			'total' => $contents['hits']['total'],
+			'data' => $data
+		);
 	}
 }
