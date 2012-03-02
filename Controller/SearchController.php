@@ -26,7 +26,7 @@ class SearchController extends AppController {
 					),
 				),
 			),
-			'fields' => array('url'),
+			'fields' => array('url', 'title'),
 			'highlight' => array(
 				'fields' => array(
 					'contents' => array('fragment_size' => 100, 'number_of_fragments' => 3)

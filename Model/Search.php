@@ -19,6 +19,7 @@ class Search {
 		$contents = json_decode($results->body(), true);
 		$data = array_map(function ($el) {
 			return array(
+				'title' => $el['fields']['title'],
 				'url' => $el['fields']['url'],
 				'contents' => $el['highlight']['contents'],
 			);
