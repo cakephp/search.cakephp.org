@@ -19,11 +19,11 @@ class SearchController extends AppController {
 
 		$query = array(
 			'query' => array(
-				'text' => array(
-					'contents' => array(
-						'query' => $this->request->query['q'],
-						'type' => 'phrase'
-					),
+				'query_string' => array(
+					'fields' => array('contents', 'title^3'),
+					'query' => $this->request->query['q'],
+					'phrase_slop' => 2,
+					'default_operator' => 'AND'
 				),
 			),
 			'fields' => array('url', 'title'),
