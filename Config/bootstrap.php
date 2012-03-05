@@ -67,3 +67,9 @@ Cache::config('default', array('engine' => 'File'));
 Configure::write('ElasticSearch', array(
 	'url' => 'http://localhost:9200/documentation/'
 ));
+
+Configure::write('AccessControlAllowOrigin', array(
+	'http://cakephp.org',
+	'http://book.cakephp.org',
+	'http://stage.book.cakephp.org',
+));
