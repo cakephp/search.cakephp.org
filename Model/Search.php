@@ -21,7 +21,7 @@ class Search {
 			return array(
 				'title' => isset($el['fields']['title']) ? $el['fields']['title'] : '',
 				'url' => $el['fields']['url'],
-				'contents' => str_replace(array('<em>', '</em>'), $el['highlight']['contents']),
+				'contents' => str_replace(array('<em>', '</em>'), '', $el['highlight']['contents']),
 			);
 		}, $contents['hits']['hits']);
 		return array(
