@@ -7,6 +7,12 @@ class SearchController extends AppController {
  * Search the elastic search index.
  */
 	public function search() {
+		foreach (Configure::read('AccessControlAllowOrigin') as $domain) {
+			if (strpos($this->request->referer(), $domain) === 0) {
+				$this->response->header(array('Access-Control-Allow-Origin', $domain));
+				break;
+			}
+		}
 		if (empty($this->request->query['lang'])) {
 			throw new BadRequestException();
 		}
