@@ -9,7 +9,7 @@ class SearchController extends AppController {
 	public function search() {
 		foreach (Configure::read('AccessControlAllowOrigin') as $domain) {
 			if (strpos($this->request->referer(), $domain) === 0) {
-				$this->response->header(array('Access-Control-Allow-Origin', $domain));
+				$this->response->header(array('Access-Control-Allow-Origin' => $domain));
 				break;
 			}
 		}
