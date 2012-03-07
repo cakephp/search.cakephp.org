@@ -23,6 +23,10 @@ class SearchController extends AppController {
 			$page = $this->request->query['page'];
 		}
 
+		if (count(array_filter(explode(' ', $this->request->query['q']))) === 1) {
+			$this->request->query['q'] .= '~';
+		}
+
 		$query = array(
 			'query' => array(
 				'query_string' => array(
