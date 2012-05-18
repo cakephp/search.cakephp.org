@@ -13,6 +13,10 @@ class SearchController extends AppController {
 				break;
 			}
 		}
+		$version = '2-2';
+		if (!empty($this->request->query['version'])) {
+			$version = $this->request->query['version'];
+		}
 		if (empty($this->request->query['lang'])) {
 			throw new BadRequestException();
 		}
@@ -38,9 +42,14 @@ class SearchController extends AppController {
 			),
 			'fields' => array('url', 'title'),
 			'highlight' => array(
+				'pre_tags' => array(''),
+				'post_tags' => array(''),
 				'fields' => array(
-					'contents' => array('fragment_size' => 100, 'number_of_fragments' => 3)
-				)
+					'contents' => array(
+						'fragment_size' => 100,
+						'number_of_fragments' => 3
+					),
+				),
 			),
 			'size' => 25,
 		);
@@ -49,7 +58,7 @@ class SearchController extends AppController {
 		if ($page > 0) {
 			$query['from'] = $query['size'] * ($page - 1);
 		}
-		$results = $this->Search->find($lang, $query);
+		$results = $this->Search->find($lang, $version, $query);
 		$this->set('results', $results);
 		$this->set('_serialize', 'results');
 	}
