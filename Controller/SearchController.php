@@ -38,7 +38,7 @@ class SearchController extends AppController {
 					'query' => $this->request->query['q'],
 					'phrase_slop' => 2,
 					'default_operator' => 'AND',
-					'fuzzy_min_sim' => 0.6
+					'fuzzy_min_sim' => 0.7
 				),
 			),
 			'fields' => array('url', 'title'),
