@@ -8,11 +8,9 @@ class SearchController extends AppController {
  */
 	public function search() {
 		foreach (Configure::read('AccessControlAllowOrigin') as $domain) {
-			if (strpos($this->request->referer(), $domain) === 0) {
-				$this->response->header(array('Access-Control-Allow-Origin' => $domain));
-				break;
-			}
+			header("Access-Control-Allow-Origin: $domain", false);
 		}
+
 		$version = '2-2';
 		if (!empty($this->request->query['version'])) {
 			$version = $this->request->query['version'];
@@ -26,16 +24,20 @@ class SearchController extends AppController {
 		if (!empty($this->request->query['page'])) {
 			$page = $this->request->query['page'];
 		}
+		$q = '';
+		if (isset($this->request->query['q'])) {
+			$q = $this->request->query['q'];
+		}
 
-		if (count(array_filter(explode(' ', $this->request->query['q']))) === 1) {
-			$this->request->query['q'] .= '~';
+		if (count(array_filter(explode(' ', $q))) === 1) {
+			$q .= '~';
 		}
 
 		$query = array(
 			'query' => array(
 				'query_string' => array(
 					'fields' => array('contents', 'title^3'),
-					'query' => $this->request->query['q'],
+					'query' => $q,
 					'phrase_slop' => 2,
 					'default_operator' => 'AND',
 					'fuzzy_min_sim' => 0.7
