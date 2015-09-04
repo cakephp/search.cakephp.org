@@ -1,4 +1,6 @@
 <?php
+namespace Model;
+
 App::uses('HttpSocket', 'Network/Http');
 
 class Search {

@@ -1,5 +1,7 @@
 <?php
 /*i18n schema generated on: 2007-11-25 07:11:25 : 1196004805*/
+namespace Config\Schema;
+
 
 /**
  * This is i18n Schema file

@@ -1,4 +1,6 @@
 <?php
+namespace Controller;
+
 class SearchController extends AppController {
 
 	public $components = array('RequestHandler');
