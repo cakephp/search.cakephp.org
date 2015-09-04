@@ -1,19 +1,17 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::
-:: Bake is a shell script for running CakePHP bake script
-:: PHP 5
+:: Cake is a Windows batch script for invoking CakePHP shell commands
 ::
 :: CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
-:: Copyright 2005-2011, Cake Software Foundation, Inc.
+:: Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
 ::
 :: Licensed under The MIT License
 :: Redistributions of files must retain the above copyright notice.
 ::
-:: @copyright		Copyright 2005-2011, Cake Software Foundation, Inc.
-:: @link		http://cakephp.org CakePHP(tm) Project
-:: @package   		app.Console
-:: @since		CakePHP(tm) v 2.0
-:: @license		MIT License (http://www.opensource.org/licenses/mit-license.php)
+:: @copyright     Copyright (c) Cake Software Foundation, Inc. (http://cakefoundation.org)
+:: @link          http://cakephp.org CakePHP(tm) Project
+:: @since         2.0.0
+:: @license       http://www.opensource.org/licenses/mit-license.php MIT License
 ::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
@@ -25,7 +23,7 @@
 SET app=%0
 SET lib=%~dp0
 
-php -q "%lib%cake.php" -working "%CD% " %*
+php "%lib%cake.php" %*
 
 echo.
 

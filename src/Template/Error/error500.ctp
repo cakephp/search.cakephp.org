@@ -1,28 +1,37 @@
 <?php
-/**
- *
- * PHP 5
- *
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
- * Licensed under The MIT License
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright 2005-2011, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @package       Cake.View.Errors
- * @since         CakePHP(tm) v 0.10.0.1076
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
- */
+use Cake\Core\Configure;
+use Cake\Error\Debugger;
+
+if (Configure::read('debug')):
+    $this->layout = 'dev_error';
+
+    $this->assign('title', $message);
+    $this->assign('templateName', 'error500.ctp');
+
+    $this->start('file');
 ?>
-<h2><?php echo $name; ?></h2>
-<p class="error">
-	<strong><?php echo __d('cake', 'Error'); ?>: </strong>
-	<?php echo __d('cake', 'An Internal Error Has Occurred.'); ?>
-</p>
+<?php if (!empty($error->queryString)) : ?>
+    <p class="notice">
+        <strong>SQL Query: </strong>
+        <?= h($error->queryString) ?>
+    </p>
+<?php endif; ?>
+<?php if (!empty($error->params)) : ?>
+        <strong>SQL Query Params: </strong>
+        <?= Debugger::dump($error->params) ?>
+<?php endif; ?>
 <?php
-if (Configure::read('debug') > 0 ):
-	echo $this->element('exception_stack_trace');
+    echo $this->element('auto_table_warning');
+
+    if (extension_loaded('xdebug')):
+        xdebug_print_function_stack();
+    endif;
+
+    $this->end();
 endif;
 ?>
+<h2><?= __d('cake', 'An Internal Error Has Occurred') ?></h2>
+<p class="error">
+    <strong><?= __d('cake', 'Error') ?>: </strong>
+    <?= h($message) ?>
+</p>
