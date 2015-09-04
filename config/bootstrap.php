@@ -176,11 +176,9 @@ Request::addDetector('tablet', function ($request) {
  * advanced ways of loading plugins
  *
  * Plugin::loadAll(); // Loads all plugins at once
- * Plugin::load('Migrations'); //Loads a single plugin named Migrations
  *
  */
-
-Plugin::load('Migrations');
+Plugin::load('Cake/ElasticSearch', ['bootstrap' => true]);
 
 // Only try to load DebugKit in development mode
 // Debug Kit should not be installed on a production system
