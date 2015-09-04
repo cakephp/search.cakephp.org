@@ -17,7 +17,7 @@ class Search {
 		$url = $config['url'];
 		$url .= $version . '-' . $lang . '/_search';
 
-		$Http = new HttpSocket();
+		$Http = new Client();
 		$results = $Http->get($url, array(), array('body' => json_encode($query)));
 		$contents = json_decode($results->body(), true);
 		$data = array_map(function ($el) {
