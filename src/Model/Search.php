@@ -1,7 +1,8 @@
 <?php
 namespace Model;
 
-App::uses('HttpSocket', 'Network/Http');
+use App\Network\Http\HttpSocket;
+use Cake\Core\Configure;
 
 class Search {
 /**

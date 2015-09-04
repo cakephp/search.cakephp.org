@@ -21,8 +21,8 @@
  */
 namespace Controller;
 
+use Cake\Controller\Controller;
 
-App::uses('Controller', 'Controller');
 
 /**
  * Application Controller

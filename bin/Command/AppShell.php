@@ -17,8 +17,8 @@
  */
 namespace bin\Command;
 
+use Cake\Console\Shell;
 
-App::uses('Shell', 'Console');
 
 /**
  * Application Shell

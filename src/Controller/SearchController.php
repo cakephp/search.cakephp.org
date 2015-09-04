@@ -1,6 +1,9 @@
 <?php
 namespace Controller;
 
+use App\Controller\AppController;
+use Cake\Core\Configure;
+
 class SearchController extends AppController {
 
 	public $components = array('RequestHandler');
