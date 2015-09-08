@@ -3,6 +3,7 @@ namespace Controller;
 
 use App\Controller\AppController;
 use Cake\Core\Configure;
+use Cake\Network\Exception\BadRequestException;
 
 class SearchController extends AppController {
 
@@ -38,35 +39,12 @@ class SearchController extends AppController {
 			$this->request->query['q'] .= '~';
 		}
 
-		$query = array(
-			'query' => array(
-				'query_string' => array(
-					'fields' => array('contents', 'title^3'),
-					'query' => $this->request->query['q'],
-					'phrase_slop' => 2,
-					'default_operator' => 'AND',
-					'fuzzy_min_sim' => 0.7
-				),
-			),
-			'fields' => array('url', 'title'),
-			'highlight' => array(
-				'pre_tags' => array(''),
-				'post_tags' => array(''),
-				'fields' => array(
-					'contents' => array(
-						'fragment_size' => 100,
-						'number_of_fragments' => 3
-					),
-				),
-			),
-			'size' => 25,
-		);
-
-		// Pagination
-		if ($page > 0) {
-			$query['from'] = $query['size'] * ($page - 1);
-		}
-		$results = $this->Search->find($lang, $version, $query);
+		$options = [
+			'query' => $this->request->query('q'),
+			'page' => $page,
+		];
+		$this->loadModel('Search', 'Elastic');
+		$results = $this->Search->search($lang, $version, $options);
 		$this->set('results', $results);
 		$this->set('_serialize', 'results');
 	}
