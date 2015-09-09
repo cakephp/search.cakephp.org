@@ -43,5 +43,5 @@ Router::defaultRouteClass('Route');
 
 Router::scope('/', function ($routes) {
     $routes->extensions(['json']);
-    $routes->connect('/search', array('controller' => 'search', 'action' => 'search'));
+    $routes->connect('/search', array('controller' => 'Search', 'action' => 'search'));
 });
