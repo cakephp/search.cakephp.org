@@ -1,5 +1,5 @@
 <?php
-namespace Controller;
+namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Core\Configure;
@@ -30,10 +30,11 @@ class SearchController extends AppController {
 		}
 		$lang = $this->request->query['lang'];
 
-		$page = 0;
+		$page = 1;
 		if (!empty($this->request->query['page'])) {
 			$page = $this->request->query['page'];
 		}
+		$page = max($page, 1);
 
 		if (count(array_filter(explode(' ', $this->request->query['q']))) === 1) {
 			$this->request->query['q'] .= '~';

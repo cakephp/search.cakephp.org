@@ -1,16 +1,16 @@
 <?php
-namespace Model;
+namespace App\Model\Type;
 
 use Cake\ElasticSearch\Type;
 use Elastica\Query\QueryString;
 
-class Search extends Type {
+class SearchType extends Type {
 
 /**
  * Search the index
  */
 	public function search($lang, $version, $options = []) {
-		$query += array(
+		$options += array(
 			'query' => '',
 			'page' => 1,
 			'sort' => array('_score'),
@@ -28,8 +28,7 @@ class Search extends Type {
 			->setFuzzyMinSim('0.7');
 
 		$query->select(['url', 'title'])
-			->limit(25)
-			->page($options['page'])
+			->page($options['page'], 25)
 			->highlight([
 				'pre_tags' => array(''),
 				'post_tags' => array(''),
@@ -44,15 +43,19 @@ class Search extends Type {
 
 		$results = $query->all();
 		$rows = $results->map(function ($row) {
+			$contents = '';
+			if ($row->highlights()) {
+				$contents = $row->highlights()['contents'];
+			}
 			return [
 				'title' => $row->title ?: '',
 				'url' => $row->url,
-				'contents' => $row->highlights()['contents'],
+				'contents' => $contents,
 			];
 		});
 		return [
 			'page' => $options['page'] ?: 1,
-			'total' => $results->count(),
+			'total' => $results->getTotalHits(),
 			'data' => $rows,
 		];
 	}
