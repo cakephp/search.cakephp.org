@@ -284,4 +284,12 @@ return [
     'Session' => [
         'defaults' => 'php',
     ],
+
+    /**
+     * List of domains that will have Access-Control headers set.
+     */
+    'AccessControlAllowOrigin' => [
+        'http://cakephp.org',
+        'http://book.cakephp.org',
+    ],
 ];
