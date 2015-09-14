@@ -27,8 +27,7 @@ class SearchType extends Type {
 			->setDefaultOperator('AND')
 			->setFuzzyMinSim('0.7');
 
-		$query->select(['url', 'title'])
-			->page($options['page'], 25)
+		$query->page($options['page'], 25)
 			->highlight([
 				'pre_tags' => array(''),
 				'post_tags' => array(''),
@@ -39,6 +38,9 @@ class SearchType extends Type {
 					),
 				),
 			])
+			->where(function ($builder) {
+				return $builder->matchAll();
+			})
 			->query($q);
 
 		$results = $query->all();
