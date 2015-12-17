@@ -31,8 +31,9 @@
         }
     },
     "scripts": {
+        "post-install-cmd": "App\\Console\\Installer::postInstall",
         "post-autoload-dump": "Cake\\Composer\\Installer\\PluginInstaller::postAutoloadDump"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "prefer-stable": true
 }
