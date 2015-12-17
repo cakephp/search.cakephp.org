@@ -56,7 +56,7 @@ class SearchController extends AppController
         $this->loadModel('Search', 'Elastic');
         $results = $this->Search->search($lang, $version, $options);
 
-        $this->viewClass = 'Json';
+        $this->viewBuilder()->className('Json');
         $this->set('results', $results);
         $this->set('_serialize', 'results');
     }
