@@ -2,3 +2,4 @@
 /vendor/*
 /tmp
 /logs/*.log
+.DS_Store
