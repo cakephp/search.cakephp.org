@@ -289,8 +289,6 @@ return [
      * List of domains that will have Access-Control headers set.
      */
     'AccessControlAllowOrigin' => [
-        'docs.cakephp.org',
-        'http://cakephp.org',
-        'http://book.cakephp.org',
+        '*.cakephp.org',
     ],
 ];

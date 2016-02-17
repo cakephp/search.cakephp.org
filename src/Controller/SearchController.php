@@ -22,14 +22,14 @@ class SearchController extends AppController
      */
     public function search()
     {
-        $referer = $this->request->referer();
-        $origin = $this->request->header('Origin');
-        foreach (Configure::read('AccessControlAllowOrigin') as $domain) {
-            if (strpos($referer, $domain) === 0 || strpos($origin, $domain) === 0) {
-                $this->response->header(['Access-Control-Allow-Origin' => $domain]);
-                break;
-            }
-        }
+        $domains = Configure::read('AccessControlAllowOrigin');
+        $this->response->cors($this->request)
+            ->allowOrigin($domains)
+            ->allowMethods(['GET'])
+            ->allowHeaders(['X-CSRF-Token'])
+            ->maxAge(300)
+            ->build();
+
         $version = '2-2';
         if (!empty($this->request->query['version'])) {
             $version = $this->request->query['version'];
