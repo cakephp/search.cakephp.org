@@ -287,7 +287,7 @@ return [
             'host' => '127.0.0.1',
             'port' => 9200,
             'index' => 'documentation',
-            'url' => env('ELASTICSEARCH_URL', null),
+            'url' => str_replace('http://', 'elasticsearch://', env('ELASTICSEARCH_URL', null)),
         ],
 
         /**
@@ -299,6 +299,7 @@ return [
             'host' => '127.0.0.1',
             'port' => 9200,
             'index' => 'test_documentation',
+            'url' => str_replace('http://', 'elasticsearch://', env('TEST_ELASTICSEARCH_URL', null)),
         ],
     ],
 
