@@ -182,7 +182,7 @@ Request::addDetector('tablet', function ($request) {
 
 Plugin::load('Cake/ElasticSearch', ['bootstrap' => true]);
 ConnectionManager::dsnClassMap([
-  'elasticsearch' => 'Cake\ElasticSearch\Datasource\Connection',
+  'http' => 'Cake\ElasticSearch\Datasource\Connection',
 ]);
 
 // Only try to load DebugKit in development mode

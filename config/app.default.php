@@ -297,7 +297,7 @@ return [
             'port' => 9200,
             'index' => 'documentation',
             'url' => $querystringArgumentAppender(
-              str_replace('http://', 'elasticsearch://', env('ELASTICSEARCH_URL', null)),
+              env('ELASTICSEARCH_URL', null),
               'driver=Cake\ElasticSearch\Datasource\Connection'
             ),
         ],
@@ -312,7 +312,7 @@ return [
             'port' => 9200,
             'index' => 'test_documentation',
             'url' => $querystringArgumentAppender(
-              str_replace('http://', 'elasticsearch://', env('TEST_ELASTICSEARCH_URL', null)),
+              env('TEST_ELASTICSEARCH_URL', null),
               'driver=Cake\ElasticSearch\Datasource\Connection'
             ),
         ],
