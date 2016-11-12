@@ -46,6 +46,7 @@ use Cake\Core\Configure\Engine\PhpConfig;
 use Cake\Core\Plugin;
 use Cake\Database\Type;
 use Cake\Datasource\ConnectionManager;
+use Cake\Datasource\ConnectionRegistry;
 use Cake\Error\ErrorHandler;
 use Cake\Log\Log;
 use Cake\Mailer\Email;
@@ -181,6 +182,9 @@ Request::addDetector('tablet', function ($request) {
  */
 
 Plugin::load('Cake/ElasticSearch', ['bootstrap' => true]);
+ConnectionRegistry::dsnClassMap([
+  'elasticsearch' => 'Cake\ElasticSearch\Datasource\Connection',
+]);
 
 // Only try to load DebugKit in development mode
 // Debug Kit should not be installed on a production system
