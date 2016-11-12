@@ -1,4 +1,13 @@
 <?php
+$querystringArgumentAppender = function($url, $query) {
+   $parsedUrl = parse_url($url);
+   if ($parsedUrl['path'] == null) {
+      $url .= '/';
+   }
+   $separator = ($parsedUrl['query'] == NULL) ? '?' : '&';
+   $url .= $separator . $query;
+};
+
 return [
     /**
      * Debug Level:
@@ -287,7 +296,10 @@ return [
             'host' => '127.0.0.1',
             'port' => 9200,
             'index' => 'documentation',
-            'url' => str_replace('http://', 'elasticsearch://', env('ELASTICSEARCH_URL', null)),
+            'url' => $querystringArgumentAppender(
+              str_replace('http://', 'elasticsearch://', env('ELASTICSEARCH_URL', null)),
+              'driver=Cake\ElasticSearch\Datasource\Connection'
+            ),
         ],
 
         /**
@@ -299,7 +311,10 @@ return [
             'host' => '127.0.0.1',
             'port' => 9200,
             'index' => 'test_documentation',
-            'url' => str_replace('http://', 'elasticsearch://', env('TEST_ELASTICSEARCH_URL', null)),
+            'url' => $querystringArgumentAppender(
+              str_replace('http://', 'elasticsearch://', env('TEST_ELASTICSEARCH_URL', null)),
+              'driver=Cake\ElasticSearch\Datasource\Connection'
+            ),
         ],
     ],
 
