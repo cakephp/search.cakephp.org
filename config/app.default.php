@@ -299,7 +299,7 @@ return [
             'index' => 'documentation',
             'url' => $querystringArgumentAppender(
               env('ELASTICSEARCH_URL', null),
-              'driver=Cake\ElasticSearch\Datasource\Connection'
+              'driver=Cake\ElasticSearch\Datasource\Connection&className=Cake\ElasticSearch\Datasource\Connection'
             ),
         ],
 
@@ -314,7 +314,7 @@ return [
             'index' => 'test_documentation',
             'url' => $querystringArgumentAppender(
               env('TEST_ELASTICSEARCH_URL', null),
-              'driver=Cake\ElasticSearch\Datasource\Connection'
+              'driver=Cake\ElasticSearch\Datasource\Connection&className=Cake\ElasticSearch\Datasource\Connection'
             ),
         ],
     ],
