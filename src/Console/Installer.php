@@ -14,7 +14,6 @@
  */
 namespace App\Console;
 
-use Cake\Utility\Security;
 use Composer\Script\Event;
 use Exception;
 
@@ -175,19 +174,17 @@ class Installer
         $config = $dir . '/config/app.php';
         $content = file_get_contents($config);
 
-        $newKey = hash('sha256', Security::randomBytes(64));
+        $newKey = hash('sha256', $dir . php_uname() . microtime(true));
         $content = str_replace('__SALT__', $newKey, $content, $count);
 
         if ($count == 0) {
             $io->write('No Security.salt placeholder to replace.');
-
             return;
         }
 
         $result = file_put_contents($config, $content);
         if ($result) {
             $io->write('Updated Security.salt value in config/app.php');
-
             return;
         }
         $io->write('Unable to update Security.salt value.');
