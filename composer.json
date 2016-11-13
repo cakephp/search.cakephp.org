@@ -6,8 +6,9 @@
     "license": "MIT",
     "require": {
         "php": ">=5.5.9",
-        "cakephp/cakephp": "~3.2",
+        "cakephp/cakephp": "3.3.*",
         "mobiledetect/mobiledetectlib": "2.*",
+        "cakephp/migrations": "~1.0",
         "cakephp/plugin-installer": "*",
         "cakephp/elastic-search": "*"
     },
@@ -17,6 +18,7 @@
         "cakephp/bake": "~1.1"
     },
     "suggest": {
+        "markstory/asset_compress": "An asset compression plugin which provides file concatenation and a flexible filter system for preprocessing and minification.",
         "phpunit/phpunit": "Allows automated tests to be run without system-wide install.",
         "cakephp/cakephp-codesniffer": "Allows to check the code against the coding standards used in CakePHP."
     },
@@ -33,7 +35,15 @@
     },
     "scripts": {
         "post-install-cmd": "App\\Console\\Installer::postInstall",
-        "post-autoload-dump": "Cake\\Composer\\Installer\\PluginInstaller::postAutoloadDump"
+        "post-create-project-cmd": "App\\Console\\Installer::postInstall",
+        "post-autoload-dump": "Cake\\Composer\\Installer\\PluginInstaller::postAutoloadDump",
+        "check": [
+            "@test",
+            "@cs-check"
+        ],
+        "cs-check": "vendor/bin/phpcs --colors -p --standard=vendor/cakephp/cakephp-codesniffer/CakePHP ./src ./tests",
+        "cs-fix": "vendor/bin/phpcbf --colors --standard=vendor/cakephp/cakephp-codesniffer/CakePHP ./src ./tests",
+        "test": "vendor/bin/phpunit --colors=always"
     },
     "minimum-stability": "stable",
     "prefer-stable": true
