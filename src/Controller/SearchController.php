@@ -3,17 +3,14 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 use Cake\Core\Configure;
-use Cake\Network\Exception\BadRequestException;
+use Cake\Http\Exception\BadRequestException;
 
 class SearchController extends AppController
 {
-
-    /**
-     * @var array Components
-     */
-    public $components = [
-        'RequestHandler'
-    ];
+    public function initialize(): void
+    {
+        $this->loadComponent('RequestHandler');
+    }
 
     /**
      * Search the elastic search index.
@@ -30,34 +27,31 @@ class SearchController extends AppController
             ->maxAge(300)
             ->build();
 
-        $version = '2-2';
-        if (!empty($this->request->query['version'])) {
-            $version = $this->request->query['version'];
-        }
-        if (empty($this->request->query['lang'])) {
+        if (empty($this->request->getQuery('lang'))) {
             throw new BadRequestException();
         }
-        $lang = $this->request->query['lang'];
+        $lang = $this->request->getQuery('lang');
 
-        $page = 1;
-        if (!empty($this->request->query['page'])) {
-            $page = $this->request->query['page'];
-        }
+        $version = $this->request->getQuery('version', '2-2');
+        $page = (int)$this->request->getQuery('page', 1);
         $page = max($page, 1);
 
-        if (count(array_filter(explode(' ', $this->request->query['q']))) === 1) {
-            $this->request->query['q'] .= '~';
+        $query = $this->request->getQuery('q', '');
+        if (count(array_filter(explode(' ', $query))) === 1) {
+            $query .= '~';
         }
 
         $options = [
-            'query' => $this->request->query('q'),
+            'query' => $query,
             'page' => $page,
         ];
         $this->loadModel('Search', 'Elastic');
         $results = $this->Search->search($lang, $version, $options);
 
-        $this->viewBuilder()->className('Json');
+        $this->viewBuilder()
+            ->setClassName('Json')
+            ->setOption('serialize', 'results');
+
         $this->set('results', $results);
-        $this->set('_serialize', 'results');
     }
 }

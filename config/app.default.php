@@ -1,4 +1,6 @@
 <?php
+use Cake\Error\ExceptionRenderer;
+
 $querystringArgumentAppender = function($url, $query) {
     $parsedUrl = parse_url($url);
     if (!isset($parsedUrl['path']) || $parsedUrl['path'] == null) {
@@ -50,6 +52,7 @@ return [
         'namespace' => 'App',
         'encoding' => env('APP_ENCODING', 'UTF-8'),
         'defaultLocale' => env('APP_DEFAULT_LOCALE', 'en_US'),
+        'defaultTimezone' => env('APP_DEFAULT_TIMEZONE', 'UTC'),
         'base' => false,
         'dir' => 'src',
         'webroot' => 'webroot',
@@ -61,8 +64,8 @@ return [
         'jsBaseUrl' => 'js/',
         'paths' => [
             'plugins' => [ROOT . DS . 'plugins' . DS],
-            'templates' => [APP . 'Template' . DS],
-            'locales' => [APP . 'Locale' . DS],
+            'templates' => [ROOT . DS . 'templates' . DS],
+            'locales' => [RESOURCES . 'locales' . DS],
         ],
     ],
 
@@ -161,7 +164,7 @@ return [
      */
     'Error' => [
         'errorLevel' => E_ALL,
-        'exceptionRenderer' => 'Cake\Error\ExceptionRenderer',
+        'exceptionRenderer' => ExceptionRenderer::class,
         'skipLog' => [],
         'log' => true,
         'trace' => true,
@@ -298,7 +301,7 @@ return [
             'port' => 9200,
             'index' => 'documentation',
             'url' => $querystringArgumentAppender(
-              env('ELASTICSEARCH_URL', null),
+              env('ELASTICSEARCH_URL', 'elasticsearch://127.0.0.1:9200'),
               'driver=Cake\ElasticSearch\Datasource\Connection&className=Cake\ElasticSearch\Datasource\Connection'
             ),
         ],
@@ -313,7 +316,7 @@ return [
             'port' => 9200,
             'index' => 'test_documentation',
             'url' => $querystringArgumentAppender(
-              env('TEST_ELASTICSEARCH_URL', null),
+              env('TEST_ELASTICSEARCH_URL',  'elasticsearch://127.0.0.1:9200'),
               'driver=Cake\ElasticSearch\Datasource\Connection&className=Cake\ElasticSearch\Datasource\Connection'
             ),
         ],

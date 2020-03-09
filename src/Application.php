@@ -15,6 +15,8 @@
 namespace App;
 
 use Cake\Core\Configure;
+use Cake\Datasource\ConnectionManager;
+use Cake\Datasource\FactoryLocator;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
 use Cake\Routing\Middleware\AssetMiddleware;
@@ -28,24 +30,38 @@ use Cake\Routing\Middleware\RoutingMiddleware;
  */
 class Application extends BaseApplication
 {
+    public function bootstrap(): void {
+        parent::bootstrap();
+        $this->addPlugin('Cake/ElasticSearch');
+
+        if (Configure::read('debug')) {
+            $this->addPlugin('DebugKit');
+        }
+        ConnectionManager::setDsnClassMap([
+          'http' => 'Cake\ElasticSearch\Datasource\Connection',
+        ]);
+
+        FactoryLocator::add('Elastic', ['Cake\ElasticSearch\IndexRegistry', 'get']);
+    }
+
     /**
      * Setup the middleware your application will use.
      *
      * @param \Cake\Http\MiddlewareQueue $middleware The middleware queue to setup.
      * @return \Cake\Http\MiddlewareQueue The updated middleware.
      */
-    public function middleware($middleware)
+    public function middleware($middleware): \Cake\Http\MiddlewareQueue
     {
         $middleware
             // Catch any exceptions in the lower layers,
             // and make an error page/response
-            ->add(new ErrorHandlerMiddleware(Configure::read('Error.exceptionRenderer')))
+            ->add(new ErrorHandlerMiddleware(Configure::read('Error')))
 
             // Handle plugin/theme assets like CakePHP normally does.
             ->add(new AssetMiddleware())
 
             // Apply routing
-            ->add(new RoutingMiddleware());
+            ->add(new RoutingMiddleware($this));
 
         return $middleware;
     }
