@@ -17,9 +17,6 @@
  * @link          http://cakephp.org CakePHP(tm) Project
  * @license       http://www.opensource.org/licenses/mit-license.php MIT License
  */
-
-use Cake\Core\Plugin;
-use Cake\Routing\RouteBuilder;
 use Cake\Routing\Router;
 
 /**
@@ -43,6 +40,6 @@ use Cake\Routing\Router;
 Router::defaultRouteClass('Route');
 
 Router::scope('/', function ($routes) {
-    $routes->extensions(['json']);
+    $routes->setExtensions(['json']);
     $routes->connect('/search', array('controller' => 'Search', 'action' => 'search'));
 });
