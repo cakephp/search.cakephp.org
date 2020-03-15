@@ -20,7 +20,7 @@ class SearchController extends AppController
     public function search()
     {
         $domains = Configure::read('AccessControlAllowOrigin');
-        $this->response->cors($this->request)
+        $this->response = $this->response->cors($this->request)
             ->allowOrigin($domains)
             ->allowMethods(['GET'])
             ->allowHeaders(['X-CSRF-Token'])
