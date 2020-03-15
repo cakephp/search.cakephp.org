@@ -32,7 +32,7 @@ class SearchController extends AppController
         }
         $lang = $this->request->getQuery('lang');
 
-        $version = $this->request->getQuery('version', '2-2');
+        $version = $this->getVersion();
         $page = (int)$this->request->getQuery('page', 1);
         $page = max($page, 1);
 
@@ -53,5 +53,42 @@ class SearchController extends AppController
             ->setOption('serialize', 'results');
 
         $this->set('results', $results);
+    }
+
+    /**
+     * Get the search version. Account for backwards compatible names
+     * as book rebuilds take some time.
+     */
+    protected function getVersion()
+    {
+        $version = $this->request->getQuery('version');
+        switch ($version) {
+            case 'authorization-11':
+                return 'authorization-1';
+
+            case 'authentication-11':
+                return 'authentication-1';
+
+            case '1-1':
+                return '11';
+
+            case '1-2':
+                return '12';
+
+            case '1-3':
+                return '13';
+
+            case '3-0':
+                return '30';
+
+            case '4-0':
+                return '40';
+
+            case '2-10':
+            case '2-2':
+                return '20';
+            default:
+                return $version;
+        }
     }
 }
