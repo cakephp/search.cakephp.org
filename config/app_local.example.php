@@ -10,6 +10,8 @@ $querystringArgumentAppender = function($url, $query) {
 };
 
 return [
+    'debug' => filter_var(env('DEBUG', false), FILTER_VALIDATE_BOOLEAN),
+
     'Datasources' => [
         'elastic' => [
             'url' => $querystringArgumentAppender(
