@@ -49,7 +49,8 @@ class SearchIndex extends Index
                     ->setFields(['contents', 'title^3'])
                     ->setDefaultOperator('AND');
                 return $q;
-            });
+            })
+            ->order($options['sort']);
 
         /** @var \Cake\ElasticSearch\ResultSet $results  */
         $results = $query->all();
