@@ -16,7 +16,7 @@ class SearchIndex extends Index
     /**
      * Search the index
      *
-     * @return void
+     * @return array
      */
     public function search($lang, $version, $options = [])
     {
@@ -43,11 +43,13 @@ class SearchIndex extends Index
                     ],
                 ],
             ])
-            ->where(function () use ($options) {
+            ->queryMust(function () use ($options) {
                 $q = new QueryString($options['query']);
-                $q->setPhraseSlop(2)
+                $q
+                    ->setPhraseSlop(2)
                     ->setFields(['contents', 'title^3'])
                     ->setDefaultOperator('AND');
+
                 return $q;
             })
             ->order($options['sort']);
@@ -65,6 +67,7 @@ class SearchIndex extends Index
                 'contents' => $contents,
             ];
         });
+
         return [
             'page' => $options['page'] ?: 1,
             'total' => $results->getTotalHits(),
