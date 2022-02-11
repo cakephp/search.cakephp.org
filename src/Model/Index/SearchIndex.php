@@ -6,6 +6,8 @@ use Elastica\Query\QueryString;
 
 class SearchIndex extends Index
 {
+    protected const MAX_LIMIT = 25;
+
     public function initialize(array $config): void
     {
         parent::initialize($config);
@@ -32,8 +34,9 @@ class SearchIndex extends Index
         // This is a bit dangerous, but this class only has one real method.
         $this->setName($indexName);
         $query = $this->query();
+        $limit = $options['limit'] >= 1 && $options['limit'] <= self::MAX_LIMIT ? $options['limit'] : self::MAX_LIMIT;
 
-        $query->page($options['page'], $options['limit'])
+        $query->page($options['page'], $limit)
             ->highlight([
                 'pre_tags' => [''],
                 'post_tags' => [''],
