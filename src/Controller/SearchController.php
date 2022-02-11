@@ -35,6 +35,7 @@ class SearchController extends AppController
         $version = $this->getVersion();
         $page = (int)$this->request->getQuery('page', 1);
         $page = max($page, 1);
+        $limit = (int)$this->request->getQuery('limit', 25);
 
         $query = $this->request->getQuery('q', '');
         if (count(array_filter(explode(' ', $query))) === 1) {
@@ -44,6 +45,7 @@ class SearchController extends AppController
         $options = [
             'query' => $query,
             'page' => $page,
+            'limit' => $limit,
         ];
         $this->loadModel('Search', 'Elastic');
         $results = $this->Search->search($lang, $version, $options);

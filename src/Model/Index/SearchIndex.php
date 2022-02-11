@@ -24,6 +24,7 @@ class SearchIndex extends Index
             'query' => '',
             'page' => 1,
             'sort' => ['_score'],
+            'limit' => 25,
         ];
         // Set the index and type name up.
         $indexName = implode('-', ['cake-docs', $version, $lang]);
@@ -32,7 +33,7 @@ class SearchIndex extends Index
         $this->setName($indexName);
         $query = $this->query();
 
-        $query->page($options['page'], 25)
+        $query->page($options['page'], $options['limit'])
             ->highlight([
                 'pre_tags' => [''],
                 'post_tags' => [''],
