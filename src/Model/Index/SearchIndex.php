@@ -7,6 +7,7 @@ use Elastica\Query\QueryString;
 class SearchIndex extends Index
 {
     protected const MAX_LIMIT = 25;
+    protected const DEFAULT_LIMIT = 25;
 
     public function initialize(array $config): void
     {
@@ -26,7 +27,7 @@ class SearchIndex extends Index
             'query' => '',
             'page' => 1,
             'sort' => ['_score'],
-            'limit' => 25,
+            'limit' => self::DEFAULT_LIMIT,
         ];
         // Set the index and type name up.
         $indexName = implode('-', ['cake-docs', $version, $lang]);
@@ -34,7 +35,9 @@ class SearchIndex extends Index
         // This is a bit dangerous, but this class only has one real method.
         $this->setName($indexName);
         $query = $this->query();
-        $limit = $options['limit'] >= 1 && $options['limit'] <= self::MAX_LIMIT ? $options['limit'] : self::MAX_LIMIT;
+        $limit = $options['limit'] >= 1 && $options['limit'] <= self::MAX_LIMIT
+            ? $options['limit']
+            : self::DEFAULT_LIMIT;
 
         $query->page($options['page'], $limit)
             ->highlight([
