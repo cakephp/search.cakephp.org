@@ -1,7 +1,7 @@
 {
     "name": "cakephp/docs_search",
     "description": "Application to power search on book.cakephp.org",
-    "homepage": "http://book.cakephp.org",
+    "homepage": "https://book.cakephp.org",
     "type": "project",
     "license": "MIT",
     "require": {
