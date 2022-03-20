@@ -1,12 +1,18 @@
 <?php
+declare(strict_types=1);
+
 namespace App\Controller;
 
-use App\Controller\AppController;
-use Cake\Core\Configure;
+use App\Model\Index\SearchIndex;
+use App\QueryTranslation\QueryString;
+use Cake\ElasticSearch\IndexRegistry;
 use Cake\Http\Exception\BadRequestException;
 
 class SearchController extends AppController
 {
+    /**
+     * @inheritDoc
+     */
     public function initialize(): void
     {
         $this->loadComponent('RequestHandler');
@@ -17,38 +23,85 @@ class SearchController extends AppController
      *
      * @return void
      */
-    public function search()
+    public function search(): void
     {
-        $domains = Configure::read('AccessControlAllowOrigin');
-        $this->response = $this->response->cors($this->request)
-            ->allowOrigin($domains)
-            ->allowMethods(['GET'])
-            ->allowHeaders(['X-CSRF-Token'])
-            ->maxAge(300)
-            ->build();
+        $lang = $this->request->getQuery('lang', '');
+        if (!is_string($lang)) {
+            $e = new BadRequestException();
+            $e->setHeader('X-Reason', 'invalid-language');
 
-        if (empty($this->request->getQuery('lang'))) {
-            throw new BadRequestException();
+            throw $e;
         }
-        $lang = $this->request->getQuery('lang');
+        $lang = trim($lang);
+        if (!$lang) {
+            $e = new BadRequestException();
+            $e->setHeader('X-Reason', 'missing-language');
 
-        $version = $this->getVersion();
-        $page = (int)$this->request->getQuery('page', 1);
-        $page = max($page, 1);
+            throw $e;
+        }
+
+        $version = $this->request->getQuery('version', '');
+        if (!is_string($version)) {
+            $e = new BadRequestException();
+            $e->setHeader('X-Reason', 'invalid-version');
+
+            throw $e;
+        }
+        $version = $this->getSearchVersion($version);
+        if (!$version) {
+            $e = new BadRequestException();
+            $e->setHeader('X-Reason', 'missing-version');
+
+            throw $e;
+        }
 
         $query = $this->request->getQuery('q', '');
-        if (count(array_filter(explode(' ', $query))) === 1) {
-            $query .= '~';
+        if (!is_string($query)) {
+            $e = new BadRequestException();
+            $e->setHeader('X-Reason', 'invalid-query');
+
+            throw $e;
+        }
+
+        $queryString = new QueryString($query);
+
+        if (
+            !$queryString->isCompilable() ||
+            !$queryString->getTermCount() ||
+            $queryString->getShortestTermLength() < 3
+        ) {
+            $e = new BadRequestException();
+            $e->setHeader('X-Reason', 'invalid-syntax');
+
+            throw $e;
+        }
+
+        $page = (int)$this->request->getQuery('page', 1);
+        $limit = (int)$this->request->getQuery('limit', 10);
+
+        $highlightPreTag = $this->request->getQuery('highlightPreTag', '{{');
+        $highlightPostTag = $this->request->getQuery('highlightPostTag', '}}');
+
+        // HTML encoding helps to prevent code examples from the docs being
+        // interpreted as HTML when displayed in an HTML environment.
+        $encoder = 'default';
+        if ($this->request->getQuery('encoder') === 'html') {
+            $encoder = 'html';
         }
 
         $options = [
-            'query' => $query,
             'page' => $page,
+            'limit' => $limit,
+            'highlightPreTag' => $highlightPreTag,
+            'highlightPostTag' => $highlightPostTag,
+            'encoder' => $encoder,
         ];
-        $this->loadModel('Search', 'Elastic');
-        $results = $this->Search->search($lang, $version, $options);
+        $index = IndexRegistry::get('Search');
+        assert($index instanceof SearchIndex);
+        $results = $index->search($lang, $version, $queryString, $options);
 
-        $this->viewBuilder()
+        $this
+            ->viewBuilder()
             ->setClassName('Json')
             ->setOption('serialize', 'results');
 
@@ -58,10 +111,12 @@ class SearchController extends AppController
     /**
      * Get the search version. Account for backwards compatible names
      * as book rebuilds take some time.
+     *
+     * @param string$version The request version to transform into the search version.
+     * @return string
      */
-    protected function getVersion()
+    protected function getSearchVersion(string $version): string
     {
-        $version = $this->request->getQuery('version');
         switch ($version) {
             case 'authorization-11':
                 return 'authorization-1';
@@ -87,6 +142,7 @@ class SearchController extends AppController
             case '2-10':
             case '2-2':
                 return '20';
+
             default:
                 return $version;
         }

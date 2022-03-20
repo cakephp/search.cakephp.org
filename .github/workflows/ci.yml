@@ -9,54 +9,86 @@ on:
       - '*'
 
 jobs:
-  testsuite:
+  tests:
+    name: Tests
     runs-on: ubuntu-18.04
-    strategy:
-      fail-fast: false
-      matrix:
-        php-version: [8.0']
+
+    services:
+      elasticsearch:
+        image: elasticsearch:6.8.23
+        ports:
+          - 9200:9200
+        env:
+          discovery.type: single-node
+          ES_JAVA_OPTS: -Xms500m -Xmx500m
+        options: >-
+          --health-cmd "curl http://127.0.0.1:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
 
     steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+      - uses: actions/checkout@v2
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php-version }}
-        extensions: curl, mbstring, intl, pdo_${{ matrix.db-type }}
-        coverage: pcov
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 7.2
+          extensions: mbstring, intl
+          coverage: pcov
 
-    - name: composer install
-      run: |
-        if ${{ matrix.prefer-lowest == 'prefer-lowest' }}; then
-          composer update --no-progress --prefer-lowest --prefer-stable
-        else
-          composer update --no-progress
-        fi
-        cp ./tests/Fixture/google-auth.json ./config/google-auth.json
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Get date part for cache key
+        id: key-date
+        run: echo "::set-output name=date::$(date +'%Y-%m')"
+
+      - name: Cache composer dependencies
+        uses: actions/cache@v1
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ steps.key-date.outputs.date }}-${{ hashFiles('composer.json') }}
+
+      - name: Composer install
+        run: composer install --optimize-autoloader
+
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+
+      - name: Run PHPUnit
+        run: composer test-coverage
+
+      - name: Code Coverage Report
+        if: success()
+        uses: codecov/codecov-action@v1
 
   cs-stan:
-    name: Coding Standard & Static Analysis
+    name: Coding Standards & Static Analysis
     runs-on: ubuntu-18.04
-    env:
-      DATABASE_TEST_URL: sqlite://./docket.db
 
     steps:
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+      - uses: actions/checkout@v2
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.0'
-        extensions: mbstring, intl
-        coverage: none
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          extensions: mbstring, intl
+          tools: cs2pr
 
-    - name: composer install
-      run: composer update --no-progress
+      - name: Composer Install
+        run: composer stan-setup
 
-    - name: Run PHP CodeSniffer
-      run: vendor/bin/phpcs --ignore=tests/js src/ tests/
+      - name: Run phpcs
+        run: composer cs-check -- --parallel=1 --report=checkstyle | cs2pr
+
+      - name: Run psalm
+        run: composer psalm -- --output-format=github
+
+      - name: Run phpstan (src)
+        run: composer phpstan-src -- --error-format=github
+
+      - name: Run phpstan (tests)
+        run: composer phpstan-tests -- --error-format=github
