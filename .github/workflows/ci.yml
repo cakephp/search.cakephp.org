@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  testsuite:
+    runs-on: ubuntu-18.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [8.0']
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-version }}
+        extensions: curl, mbstring, intl, pdo_${{ matrix.db-type }}
+        coverage: pcov
+
+    - name: composer install
+      run: |
+        if ${{ matrix.prefer-lowest == 'prefer-lowest' }}; then
+          composer update --no-progress --prefer-lowest --prefer-stable
+        else
+          composer update --no-progress
+        fi
+        cp ./tests/Fixture/google-auth.json ./config/google-auth.json
+
+  cs-stan:
+    name: Coding Standard & Static Analysis
+    runs-on: ubuntu-18.04
+    env:
+      DATABASE_TEST_URL: sqlite://./docket.db
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.0'
+        extensions: mbstring, intl
+        coverage: none
+
+    - name: composer install
+      run: composer update --no-progress
+
+    - name: Run PHP CodeSniffer
+      run: vendor/bin/phpcs --ignore=tests/js src/ tests/
