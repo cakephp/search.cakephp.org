@@ -240,7 +240,7 @@ return [
             'port' => 9200,
             'index' => 'documentation',
             'url' => $querystringArgumentAppender(
-              env('ELASTICSEARCH_URL', 'elasticsearch://127.0.0.1:9200'),
+              env('DOKKU_ELASTICSEARCH_AQUA_URL', 'elasticsearch://127.0.0.1:9200'),
               'driver=Cake\ElasticSearch\Datasource\Connection&className=Cake\ElasticSearch\Datasource\Connection'
             ),
         ],
