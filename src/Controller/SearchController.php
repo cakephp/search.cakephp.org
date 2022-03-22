@@ -47,7 +47,7 @@ class SearchController extends AppController
 
             throw $e;
         }
-        $version = $this->getSearchVersion($version);
+        $version = trim($version);
         if (!$version) {
             $e = new BadRequestException();
             $e->setHeader('X-Reason', 'missing-version');
@@ -106,45 +106,5 @@ class SearchController extends AppController
             ->setOption('serialize', 'results');
 
         $this->set('results', $results);
-    }
-
-    /**
-     * Get the search version. Account for backwards compatible names
-     * as book rebuilds take some time.
-     *
-     * @param string$version The request version to transform into the search version.
-     * @return string
-     */
-    protected function getSearchVersion(string $version): string
-    {
-        switch ($version) {
-            case 'authorization-11':
-                return 'authorization-1';
-
-            case 'authentication-11':
-                return 'authentication-1';
-
-            case '1-1':
-                return '11';
-
-            case '1-2':
-                return '12';
-
-            case '1-3':
-                return '13';
-
-            case '3-0':
-                return '30';
-
-            case '4-0':
-                return '40';
-
-            case '2-10':
-            case '2-2':
-                return '20';
-
-            default:
-                return $version;
-        }
     }
 }

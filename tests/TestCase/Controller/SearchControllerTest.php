@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace App\Test\TestCase\Controller;
 
-use App\Model\Index\SearchIndex;
 use Cake\ElasticSearch\IndexRegistry;
 use Cake\TestSuite\IntegrationTestTrait;
 use Cake\TestSuite\TestCase;
@@ -367,48 +366,5 @@ class SearchControllerTest extends TestCase
                 'subsection',
             ],
         ]);
-    }
-
-    /**
-     * @return string[][]
-     */
-    public function searchVersionDataProvider(): array
-    {
-        return [
-            ['authorization-11', 'authorization-1'],
-            ['authentication-11', 'authentication-1'],
-            ['1-1', '11'],
-            ['1-2', '12'],
-            ['1-3', '13'],
-            ['3-0', '30'],
-            ['4-0', '40'],
-            ['2-10', '20'],
-            ['2-2', '20'],
-            ['other', 'other'],
-        ];
-    }
-
-    /**
-     * @dataProvider searchVersionDataProvider
-     * @param string $version The request version.
-     * @param string $expected The expected search version.
-     * @return void
-     */
-    public function testSearchVersionTranslation(string $version, string $expected): void
-    {
-        $index = $this
-            ->getMockBuilder(SearchIndex::class)
-            ->onlyMethods(['search'])
-            ->getMock();
-
-        $index
-            ->expects($this->once())
-            ->method('search')
-            ->with('en', $expected)
-            ->willReturn([]);
-
-        IndexRegistry::set('Search', $index);
-
-        $this->get("/search?lang=en&version={$version}&q=query");
     }
 }
