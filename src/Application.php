@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1);
+
 /**
  * CakePHP(tm) : Rapid Development Framework (https://cakephp.org)
  * Copyright (c) Cake Software Foundation, Inc. (https://cakefoundation.org)
@@ -17,10 +19,17 @@ namespace App;
 use Cake\Core\Configure;
 use Cake\Datasource\ConnectionManager;
 use Cake\Datasource\FactoryLocator;
+use Cake\ElasticSearch\Datasource\Connection;
+use Cake\ElasticSearch\IndexRegistry;
 use Cake\Error\Middleware\ErrorHandlerMiddleware;
 use Cake\Http\BaseApplication;
+use Cake\Http\MiddlewareQueue;
+use Cake\Http\Response;
+use Cake\Http\ServerRequest;
 use Cake\Routing\Middleware\AssetMiddleware;
 use Cake\Routing\Middleware\RoutingMiddleware;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * Application setup class.
@@ -30,7 +39,11 @@ use Cake\Routing\Middleware\RoutingMiddleware;
  */
 class Application extends BaseApplication
 {
-    public function bootstrap(): void {
+    /**
+     * @inheritDoc
+     */
+    public function bootstrap(): void
+    {
         parent::bootstrap();
         $this->addPlugin('Cake/ElasticSearch');
 
@@ -38,21 +51,38 @@ class Application extends BaseApplication
             $this->addPlugin('DebugKit');
         }
         ConnectionManager::setDsnClassMap([
-          'http' => 'Cake\ElasticSearch\Datasource\Connection',
+            'http' => Connection::class,
         ]);
 
-        FactoryLocator::add('Elastic', ['Cake\ElasticSearch\IndexRegistry', 'get']);
+        FactoryLocator::add('Elastic', [IndexRegistry::class, 'get']);
     }
 
     /**
-     * Setup the middleware your application will use.
-     *
-     * @param \Cake\Http\MiddlewareQueue $middleware The middleware queue to setup.
-     * @return \Cake\Http\MiddlewareQueue The updated middleware.
+     * @inheritDoc
      */
-    public function middleware($middleware): \Cake\Http\MiddlewareQueue
+    public function middleware(MiddlewareQueue $middlewareQueue): MiddlewareQueue
     {
-        $middleware
+        $middlewareQueue
+            ->add(function (ServerRequestInterface $request, RequestHandlerInterface $handler) {
+                assert($request instanceof ServerRequest);
+
+                if ($request->is('OPTIONS')) {
+                    $response = new Response();
+                } else {
+                    $response = $handler->handle($request);
+                }
+                assert($response instanceof Response);
+
+                return $response
+                    ->cors($request)
+                    ->allowOrigin(Configure::read('AccessControlAllowOrigin'))
+                    ->allowMethods(['GET'])
+                    ->allowHeaders(['X-CSRF-Token'])
+                    ->exposeHeaders(['X-Reason'])
+                    ->maxAge(300)
+                    ->build();
+            })
+
             // Catch any exceptions in the lower layers,
             // and make an error page/response
             ->add(new ErrorHandlerMiddleware(Configure::read('Error')))
@@ -63,6 +93,6 @@ class Application extends BaseApplication
             // Apply routing
             ->add(new RoutingMiddleware($this));
 
-        return $middleware;
+        return $middlewareQueue;
     }
 }

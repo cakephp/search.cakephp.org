@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<ruleset>
+    <exclude-pattern>./tests/comparisons/*</exclude-pattern>
+    <exclude-pattern>./tests/data/*</exclude-pattern>
+    <rule ref="./vendor/cakephp/cakephp-codesniffer/CakePHP/ruleset.xml" />
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+        <properties>
+            <property name="searchAnnotations" value="true" />
+        </properties>
+    </rule>
+</ruleset>

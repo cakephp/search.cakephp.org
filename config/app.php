@@ -166,6 +166,10 @@ return [
         'skipLog' => [],
         'log' => true,
         'trace' => true,
+        'ignoredDeprecationPaths' => [
+            'vendor/cakephp/cakephp/src/TestSuite/Fixture/FixtureInjector.php',
+            'vendor/cakephp/cakephp/src/TestSuite/TestCase.php',
+        ],
     ],
 
     /**

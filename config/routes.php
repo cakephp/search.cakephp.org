@@ -17,29 +17,10 @@
  * @link          https://cakephp.org CakePHP(tm) Project
  * @license       https://www.opensource.org/licenses/mit-license.php MIT License
  */
-use Cake\Routing\Router;
 
-/**
- * The default class to use for all routes
- *
- * The following route classes are supplied with CakePHP and are appropriate
- * to set as the default:
- *
- * - Route
- * - InflectedRoute
- * - DashedRoute
- *
- * If no call is made to `Router::defaultRouteClass()`, the class used is
- * `Route` (`Cake\Routing\Route\Route`)
- *
- * Note that `Route` does not do any inflections on URLs which will result in
- * inconsistently cased URLs when used with `:plugin`, `:controller` and
- * `:action` markers.
- *
- */
-Router::defaultRouteClass('Route');
+use Cake\Routing\RouteBuilder;
 
-Router::scope('/', function ($routes) {
+return static function (RouteBuilder $routes) {
     $routes->setExtensions(['json']);
-    $routes->connect('/search', array('controller' => 'Search', 'action' => 'search'));
-});
+    $routes->connect('/search', ['controller' => 'Search', 'action' => 'search']);
+};
