@@ -48,7 +48,7 @@ class Application extends BaseApplication
         $this->addPlugin('Cake/ElasticSearch');
 
         if (Configure::read('debug')) {
-            //$this->addPlugin('DebugKit');
+            $this->addPlugin('DebugKit');
         }
         ConnectionManager::setDsnClassMap([
             'http' => Connection::class,

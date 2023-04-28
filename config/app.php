@@ -19,8 +19,8 @@ return [
      * Development Mode:
      * true: Errors and warnings shown.
      */
-    // 'debug' => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
-    'debug' => true,
+    'debug' => filter_var(env('DEBUG', true), FILTER_VALIDATE_BOOLEAN),
+    // 'debug' => true,
 
     /**
      * Configure basic information about the application.
