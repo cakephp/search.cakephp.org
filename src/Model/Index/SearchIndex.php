@@ -6,6 +6,7 @@ namespace App\Model\Index;
 use App\Datasource\Query as AppQuery;
 use App\QueryTranslation\QueryString;
 use Cake\ElasticSearch\Index;
+use Cake\Utility\Text;
 use Elastica\Aggregation\Cardinality;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\FunctionScore;
@@ -51,7 +52,7 @@ class SearchIndex extends Index
             'encoder' => 'default',
         ];
 
-        $this->setName(implode('-', ['cake-docs', $version, $lang]));
+        $this->setName(implode('-', ['cake-docs', Text::slug($version), $lang]));
 
         $minLimit = 1;
         $maxLimit = 100;

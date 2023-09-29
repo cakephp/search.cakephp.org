@@ -8,6 +8,8 @@ use App\QueryTranslation\QueryString;
 use Cake\ElasticSearch\IndexRegistry;
 use Cake\TestSuite\TestCase;
 use Cake\Utility\Hash;
+use Elastica\Exception\ResponseException;
+use Throwable;
 
 class SearchIndexTest extends TestCase
 {
@@ -39,6 +41,34 @@ class SearchIndexTest extends TestCase
     {
         parent::tearDown();
         IndexRegistry::clear();
+    }
+
+    public function testTransformVersionForIndexName(): void
+    {
+        $this->assertSame('cake-docs-test-en', $this->index->getName());
+
+        try {
+            $this->index->search('en', '1.1', new QueryString('term'));
+        } catch (Throwable $exception) {
+            $this->assertInstanceOf(ResponseException::class, $exception);
+            $this->assertSame('no such index [index: cake-docs-1-1-en]', $exception->getMessage());
+        }
+
+        $this->assertSame('cake-docs-1-1-en', $this->index->getName());
+    }
+
+    public function testTransformVersionForIndexNameIsBackwardsCompatible(): void
+    {
+        $this->assertSame('cake-docs-test-en', $this->index->getName());
+
+        try {
+            $this->index->search('en', '1-1', new QueryString('term'));
+        } catch (Throwable $exception) {
+            $this->assertInstanceOf(ResponseException::class, $exception);
+            $this->assertSame('no such index [index: cake-docs-1-1-en]', $exception->getMessage());
+        }
+
+        $this->assertSame('cake-docs-1-1-en', $this->index->getName());
     }
 
     /**
