@@ -22,7 +22,7 @@ class SearchIndex extends Index
     {
         parent::initialize($config);
 
-        $this->setType('_doc');
+        // $this->setType('_doc');
     }
 
     /**
