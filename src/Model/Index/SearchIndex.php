@@ -21,8 +21,6 @@ class SearchIndex extends Index
     public function initialize(array $config): void
     {
         parent::initialize($config);
-
-        // $this->setType('_doc');
     }
 
     /**
